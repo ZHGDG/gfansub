@@ -1,0 +1,644 @@
+1
+00:00:00,500 --> 00:00:03,160
+Hi  我是Glenn  来自Android Audio团队
+Hi, I'm Glenn, from Android Audio.
+
+2
+00:00:03,160 --> 00:00:06,720
+我喜欢集成事物  特别是音乐和软件
+I like putting stuff together, especially music and software.
+
+3
+00:00:06,720 --> 00:00:08,780
+今天我想分享一些我一直在学的
+Today, I want to share some cool tricks
+
+4
+00:00:08,780 --> 00:00:11,692
+音频格式中的一些很酷的技巧
+I've been learning about audio formats.
+
+5
+00:00:11,692 --> 00:00:13,150
+在我们的职业生涯中  我们一直被
+For most of our careers, we've been
+
+6
+00:00:13,150 --> 00:00:17,330
+告知要用整型或者是定点运算来处理音频
+told to use integer, or fixed point arithmetic for audio.
+
+7
+00:00:17,330 --> 00:00:19,650
+我们都用整型是因为它有一些好处
+There's some good reasons why we all use integers.
+
+8
+00:00:19,650 --> 00:00:20,760
+他们很棒
+They're great.
+
+9
+00:00:20,760 --> 00:00:22,680
+定点运算也一样
+Fixed point, too.
+
+10
+00:00:22,680 --> 00:00:24,630
+从数模转换器
+From digital to analog converters,
+
+11
+00:00:24,630 --> 00:00:29,960
+到CD  到USB音频  整型和定点运算到处都是
+to CDs to USB audio, integers and fixed point are everywhere.
+
+12
+00:00:29,960 --> 00:00:35,200
+我们都知道的是  黑客躲避浮点型就像我们用basic//todo
+As we all know, hackers avoid Floats as much as we do basic.
+
+13
+00:00:35,200 --> 00:00:39,240
+让我们来看看我们为什么不用浮点型
+So let's review the reasons why we don't use floating point.
+
+14
+00:00:39,240 --> 00:00:41,250
+首先  这里没有浮点型
+First of all, it's not there.
+
+15
+00:00:41,250 --> 00:00:43,900
+没有支持浮点型的单元
+No affordable floating point unit.
+
+16
+00:00:43,900 --> 00:00:45,730
+这是我的首个FPU
+This was my first FPU.
+
+17
+00:00:45,730 --> 00:00:48,590
+每秒5000次浮点运算  非常昂贵
+5,000 flops, and so expensive, we only
+
+18
+00:00:48,590 --> 00:00:51,880
+我们只在绝对要用的时候用到它
+used it when we absolutely had to.
+
+19
+00:00:51,880 --> 00:00:53,280
+浮点型很大
+Floats are very big.
+
+20
+00:00:53,280 --> 00:00:55,510
+每个要4字节
+Four bytes each.
+
+21
+00:00:55,510 --> 00:00:57,470
+好吧  这个好恶心
+OK, this is just gross.
+
+22
+00:00:57,470 --> 00:00:58,730
+但是你懂的
+But you get the idea.
+
+23
+00:00:58,730 --> 00:01:01,100
+浮点型很大
+Floats are huge.
+
+24
+00:01:01,100 --> 00:01:02,970
+这个是我喜欢的
+This one is my favorite.
+
+25
+00:01:02,970 --> 00:01:05,640
+罗马的衰落  我的意思是浮点型
+The decadence of Rome, I mean Floats.
+
+26
+00:01:05,640 --> 00:01:08,240
+如果你有浮点型的CPU和内存
+Even if you have the CPU and memory for floating point,
+
+27
+00:01:08,240 --> 00:01:11,750
+这种奢侈地浪费资源的行为简直是在犯罪
+it's just sinful to waste resources so extravagantly,
+
+28
+00:01:11,750 --> 00:01:14,630
+或是在浪费很奢侈的东西
+on something that's clearly a luxury.
+
+29
+00:01:14,630 --> 00:01:16,880
+这就像在用32位的  嗯
+It's kind of like using a 32-bit, um--
+
+30
+00:01:16,880 --> 00:01:19,880
+我是说用64位的Ant来显示一个布尔值
+I mean 64-bit ant to represent a Boolean.
+
+31
+00:01:19,880 --> 00:01:23,250
+你现在知道发生什么了吧
+You do realize this is what actually happens now?
+
+32
+00:01:23,250 --> 00:01:25,920
+显然  浮点型已经过时了
+So, Floats are clearly out.
+
+33
+00:01:25,920 --> 00:01:28,450
+或者是我们认为的
+Or so we think.
+
+34
+00:01:28,450 --> 00:01:31,780
+现在  我们想要从音频的数字中获得什么
+Now, what do we really want from our numbers in audio?
+
+35
+00:01:31,780 --> 00:01:35,750
+宽动态范围的软编码和声音  一致的//todo
+Wide dynamic range for soft and loud, consistent accuracy
+
+36
+00:01:35,750 --> 00:01:38,750
+精度范围  大量的空间
+across that range, and lots of headroom.
+
+37
+00:01:38,750 --> 00:01:40,885
+没有裁剪
+No clipping.
+
+38
+00:01:40,885 --> 00:01:42,600
+让我们考验一下我们的朋友
+So let's examine our friends.
+
+39
+00:01:42,600 --> 00:01:44,390
+整型和定点运算
+Integer and fixed point.
+
+40
+00:01:44,390 --> 00:01:45,270
+首先  整型
+First, integer.
+
+41
+00:01:45,270 --> 00:01:46,080
+这很简单
+This is simple.
+
+42
+00:01:46,080 --> 00:01:48,700
+相邻的值不同
+Adjacent values differ by one.
+
+43
+00:01:48,700 --> 00:01:52,550
+用二进制补码表示二进制
+Integers are represented in two's complement binary.
+
+44
+00:01:52,550 --> 00:01:56,310
+定点运算也一样  与一个隐式的二进制点
+Fixed point is the same, with an implied binary point.
+
+45
+00:01:56,310 --> 00:01:58,170
+对于音频来说  这个隐式的二进制点
+For audio, the implied binary point
+
+46
+00:01:58,170 --> 00:02:01,460
+几乎总是在左边最重要的bit上
+is almost always at the left of the most significant bit.
+
+47
+00:02:01,460 --> 00:02:04,700
+并且常量的两个相邻值不同
+And adjacent values differ by a constant power of two.
+
+48
+00:02:04,700 --> 00:02:07,340
+它仍然是二进制补码的二进制
+It's still two's complement binary.
+
+49
+00:02:07,340 --> 00:02:10,380
+早些时候  我们认为浮点型可以解决
+Now earlier, we thought Floats work out.
+
+50
+00:02:10,380 --> 00:02:12,274
+但是真的吗
+But are they really?
+
+51
+00:02:12,274 --> 00:02:13,940
+不管怎样我们先来看看  不用担心
+Let's look at them anyway-- don't worry,
+
+52
+00:02:13,940 --> 00:02:15,460
+这只是为了让这些更有趣
+it's just to make fun of them.
+
+53
+00:02:15,460 --> 00:02:17,877
+或者并不是
+Or maybe not?
+
+54
+00:02:17,877 --> 00:02:19,960
+浮点型以定点尾数开始
+Floating point starts with a fixed point mantissa.
+
+55
+00:02:19,960 --> 00:02:24,840
+尾数的比特数代表总体的精确值
+The number of bits in the mantissa determines the overall accuracy.
+
+56
+00:02:24,840 --> 00:02:26,880
+然后我们加上一个整型的指数
+Then, we add an integer exponent.
+
+57
+00:02:26,880 --> 00:02:28,500
+这增加了范围
+This increases the range.
+
+58
+00:02:28,500 --> 00:02:30,940
+指数越大  范围越大
+The wider the exponent, the more range.
+
+59
+00:02:30,940 --> 00:02:34,160
+这里有一个标记位  但是我们现在先忽略它
+There's a signed bit too, but we'll ignore that for now.
+
+60
+00:02:34,160 --> 00:02:36,930
+现在  记住我们在音频中想要的东西
+Now, remember what we all want in audio.
+
+61
+00:02:36,930 --> 00:02:40,810
+宽动态范围的软编码和声音  一致的//todo
+Wide dynamic range for soft and loud, consistent accuracy
+
+62
+00:02:40,810 --> 00:02:44,660
+精度范围和大量的空间来防止音频丢失
+across that range, and lots of headroom to prevent clipping.
+
+63
+00:02:44,660 --> 00:02:48,050
+让我们来看看浮点型在这三点中表现如何
+Let's see how well Float does on all three.
+
+64
+00:02:48,050 --> 00:02:50,900
+我们从动态范围开始
+We'll start with dynamic range.
+
+65
+00:02:50,900 --> 00:02:54,150
+这里有浮点型的一个公式  结合正弦  尾数
+Here's the formula for a Float, combining sine, mantissa
+
+66
+00:02:54,150 --> 00:02:55,400
+和指数
+and exponent.
+
+67
+00:02:55,400 --> 00:02:59,300
+戏剧性的结果是指数提升了动态范围
+Turns out the exponent increases the dynamic range dramatically,
+
+68
+00:02:59,300 --> 00:03:02,150
+和整型或定点运算相比
+compared to integer, or fixed point.
+
+69
+00:03:02,150 --> 00:03:06,080
+你需要交付多少db或bit给内容是有争议的
+How many db or bits you need for content delivery is controversial.
+
+70
+00:03:06,080 --> 00:03:07,260
+我不谈论这个
+I'm not going there.
+
+71
+00:03:07,260 --> 00:03:11,330
+能确定的是  在内部  宽动态范围是有用的
+What is certain, is that a wide dynamic range is useful internally.
+
+72
+00:03:11,330 --> 00:03:13,760
+浮点型提供了
+And Float provides that.
+
+73
+00:03:13,760 --> 00:03:16,030
+现在  我们来看一下准确性
+Now, let's look at accuracy.
+
+74
+00:03:16,030 --> 00:03:18,790
+记住  相邻的整型值不相同
+Remember, adjacent integer values differ by one,
+
+75
+00:03:18,790 --> 00:03:22,470
+相邻的常量的两个定点值不相同//todo
+and adjacent fixed point values by a constant power of two.
+
+76
+00:03:22,470 --> 00:03:24,860
+听起来很好
+Sounds good at first.
+
+77
+00:03:24,860 --> 00:03:28,010
+在定点值中  虽然差异是常数//todo
+Within some fixed point, though the differences are constant,
+
+78
+00:03:28,010 --> 00:03:29,970
+但是相邻整型值之间的比率值
+the ratios between adjacent values
+
+79
+00:03:29,970 --> 00:03:33,140
+不是常数  整数  或定点值
+are not constant, for either integer, or fixed point.
+
+80
+00:03:33,140 --> 00:03:34,200
+哇喔
+Whoah!
+
+81
+00:03:34,200 --> 00:03:36,680
+怎样做才能保持一致的准确性
+What's that going to do to consistent accuracy?
+
+82
+00:03:36,680 --> 00:03:38,880
+我们在最需要精确度的地方失去它
+We lose accuracy, where we need it most.
+
+83
+00:03:38,880 --> 00:03:40,090
+安静的信号
+Quiet signals.
+
+84
+00:03:40,090 --> 00:03:42,160
+在这个图表中  比率接近2
+In this graph, the ratios approach two
+
+85
+00:03:42,160 --> 00:03:45,450
+且变得平稳  而不是1
+as we get quieter, instead of one.
+
+86
+00:03:45,450 --> 00:03:48,060
+这是浮点型的比率图表
+And here's our ratio chart for Float.
+
+87
+00:03:48,060 --> 00:03:49,730
+相邻值之间的比率
+The ratios between adjacent values
+
+88
+00:03:49,730 --> 00:03:52,850
+基本上是不变的  而且接近1
+are now approximately constant, and approach one.
+
+89
+00:03:52,850 --> 00:03:54,720
+距离则是对数
+The distances are logarithmic.
+
+90
+00:03:54,720 --> 00:03:56,990
+注意这些密集的点接近于0
+Notice the tighter packing near zero.
+
+91
+00:03:56,990 --> 00:04:00,910
+这意味着整个完整的动态范围一致的准确性
+This means consistent accuracy across the full dynamic range.
+
+92
+00:04:00,910 --> 00:04:04,270
+所以  软编码和声音听起来都很不错
+So, soft and loud both sound great.
+
+93
+00:04:04,270 --> 00:04:06,280
+最后  让我们来看看空间
+Finally, let's look at Headroom.
+
+94
+00:04:06,280 --> 00:04:09,950
+空间是安全区域  在名义上的最高级别之上
+Headroom is a safety zone, above your nominal maximum level,
+
+95
+00:04:09,950 --> 00:04:13,230
+在中间运算中防止丢失数据
+to help prevent clipping during intermediate calculations,
+
+96
+00:04:13,230 --> 00:04:14,820
+和卡顿
+and transience.
+
+97
+00:04:14,820 --> 00:04:17,070
+这是浮点型的闪光点
+This is where floating point really shines.
+
+98
+00:04:17,070 --> 00:04:19,140
+在中间运算中几乎不可能
+It's almost impossible to clip samples
+
+99
+00:04:19,140 --> 00:04:20,920
+出现样本丢失
+during intermediate calculations,
+
+100
+00:04:20,920 --> 00:04:24,240
+因为浮点值的范围很大
+because the range to afloat is astronomical.
+
+101
+00:04:24,240 --> 00:04:27,310
+使空间最大化
+Maximize your headroom.
+
+102
+00:04:27,310 --> 00:04:31,050
+所以  是时候换角度思考了
+So, it's time to think differently.
+
+103
+00:04:31,050 --> 00:04:32,570
+这里有一些引人注目的原因
+Those were some compelling reasons
+
+104
+00:04:32,570 --> 00:04:37,314
+让你考虑使用浮点型在你的下一个音频APP中
+to consider floating point, in your next audio app.
+
+105
+00:04:37,314 --> 00:04:39,480
+使用浮点型不要求你是一个
+You don't need to be an expert in numerical analysis
+
+106
+00:04:39,480 --> 00:04:40,830
+数值分析方面的专家
+to use floating point.
+
+107
+00:04:40,830 --> 00:04:43,340
+浮点值并不是灵丹妙药
+But floating point is not a panacea.
+
+108
+00:04:43,340 --> 00:04:46,220
+你扔需要知道一些其他的  这里就有一些
+You do need to know the gotchas, and there are a few.
+
+109
+00:04:46,220 --> 00:04:47,750
+请查看视频最后的参考资料
+Check out the references at the end,
+
+110
+00:04:47,750 --> 00:04:49,490
+提示和技巧将会帮你
+with some tips and tricks that will
+
+111
+00:04:49,490 --> 00:04:52,990
+避免一些最常见的问题
+help you avoid the most common problems.
+
+112
+00:04:52,990 --> 00:04:57,450
+所以  我建议你在你的下一个APP中使用浮点型
+So, I ask you to consider floating point in your next audio app.
+
+113
+00:04:57,450 --> 00:05:00,550
+难道这些理由不足以让你使用它吗
+And what about all those reasons not to use floating point?
+
+114
+00:05:00,550 --> 00:05:02,080
+现在  你可能在期望我
+Now, you're probably expecting me
+
+115
+00:05:02,080 --> 00:05:04,888
+说一些不好的理由
+to say those reasons aren't valid anymore.
+
+116
+00:05:04,888 --> 00:05:06,190
+嗯嗯
+Uh uh.
+
+117
+00:05:06,190 --> 00:05:07,770
+这些理由还是有正确的地方的
+Some of them are still true.
+
+118
+00:05:07,770 --> 00:05:09,970
+特别是第一点
+Especially the moral depravity one.
+
+119
+00:05:09,970 --> 00:05:13,800
+但是好处就意味着  是时候捏住鼻子
+But the benefits mean it's time to hold our noses,
+
+120
+00:05:13,800 --> 00:05:16,400
+然后考虑浮点型
+and consider floating point anyway.
+
+121
+00:05:16,400 --> 00:05:17,450
+做个预先警告
+Be forewarned.
+
+122
+00:05:17,450 --> 00:05:19,480
+如果你使用浮点型  别人
+If you use floating point, others
+
+123
+00:05:19,480 --> 00:05:21,900
+就会在你做代码回顾的时候羞辱你
+will try to shame you during code reviews.
+
+124
+00:05:21,900 --> 00:05:24,380
+所以  做好迎接光荣的准备吧
+So, be prepared for glory.
+
+125
+00:05:24,380 --> 00:05:25,310
+自豪吧
+Be proud.
+
+126
+00:05:25,310 --> 00:05:27,785
+穿着大红的F  你会做得更好
+Wear the scarlet F, you'll do fine.
+
+127
+00:05:31,150 --> 00:05:33,410
+浏览此链接以获取更多信息
+Make sure to check out this link for more information.
+
+128
+00:05:36,200 --> 00:05:37,470
+我是Glenn Kasten
+I'm Glenn Kasten.
+
+129
+00:05:37,470 --> 00:05:39,660
+感谢观看
+Thank you for watching.
